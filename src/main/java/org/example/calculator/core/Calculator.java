@@ -5,10 +5,14 @@ import org.example.calculator.core.parser.ASTParser;
 import org.example.calculator.core.parser.TokenParser;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Calculator {
+    private static final int OUTPUT_SCALE = 4;
+    private static final RoundingMode OUTPUT_ROUNDING = RoundingMode.HALF_UP;
+
     public String calculate(String expression) {
         try {
             if (expression == null || expression.trim().isEmpty()) {
@@ -18,7 +22,7 @@ public class Calculator {
             TokenParser tokenParser = new TokenParser(expression);
             ASTParser astParser = new ASTParser(tokenParser);
             ASTNode ast = astParser.parse();
-            double result = ast.evaluate();
+            BigDecimal result = ast.evaluate();
             // 格式化输出
             return formatResult(result);
 
@@ -29,26 +33,14 @@ public class Calculator {
         }
     }
 
-    private String formatResult(double result) {
-        if (Double.isInfinite(result)) {
-            throw new CalculatorException("计算结果超出范围");
-        }
-        if (Double.isNaN(result)) {
-            throw new CalculatorException("计算结果非数字");
+    private String formatResult(BigDecimal result) {
+        if (result == null) {
+            throw new CalculatorException("计算结果无效");
         }
 
-        if (result == (long) result) {
-            return String.valueOf((long) result);
-        }
-
-        String stringValue = String.valueOf(result);
-        if (stringValue.contains("E") || stringValue.contains("e")) {
-            // 使用BigDecimal避免科学计数法
-            BigDecimal bd = new BigDecimal(stringValue);
-            return bd.stripTrailingZeros().toPlainString();
-        }
-        
-        return stringValue;
+        BigDecimal rounded = result.setScale(OUTPUT_SCALE, OUTPUT_ROUNDING);
+        BigDecimal normalized = rounded.stripTrailingZeros();
+        return normalized.toPlainString();
     }
 
     public List<String> batchCalculate(List<String> expressions) {

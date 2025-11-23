@@ -6,6 +6,8 @@ import org.example.calculator.core.parser.nodes.NumberASTNode;
 import org.example.calculator.core.parser.nodes.OpASTNode;
 import org.example.calculator.core.parser.token.Token;
 import org.example.calculator.core.parser.token.TokenType;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 /**
  * 按照四则运算的语法规则解析得到语法树
@@ -13,6 +15,7 @@ import org.example.calculator.core.parser.token.TokenType;
 public class ASTParser {
     private final TokenParser tokenParser;
     private Token currentToken;
+    private final MathContext mathContext = MathContext.DECIMAL128;
 
     public ASTParser(TokenParser tokenParser) {
         this.tokenParser = tokenParser;
@@ -49,7 +52,7 @@ public class ASTParser {
             ASTNode rightNode = parseTerm();
 
             // 得到最终的语法树
-            leftNode = new OpASTNode(leftNode, opType, rightNode);
+            leftNode = new OpASTNode(leftNode, opType, rightNode, mathContext);
         }
 
         return leftNode;
@@ -77,7 +80,7 @@ public class ASTParser {
             ASTNode rightNode = parseFactor();
 
             // 得到最终的运算单元
-            leftNode = new OpASTNode(leftNode, opType, rightNode);
+            leftNode = new OpASTNode(leftNode, opType, rightNode, mathContext);
         }
 
         return leftNode;
@@ -94,7 +97,7 @@ public class ASTParser {
         switch (token.getType()) {
             case NUMBER:
                 checkAndAdvance(TokenType.NUMBER);
-                return new NumberASTNode(Double.parseDouble(token.getValue()));
+                return new NumberASTNode(new BigDecimal(token.getValue()));
             case LPAREN:
                 checkAndAdvance(TokenType.LPAREN);
                 ASTNode node = parseExpression();
@@ -105,7 +108,7 @@ public class ASTParser {
                 checkAndAdvance(token.getType());
                 ASTNode factorNode = parseFactor();
                 if (token.getType() == TokenType.MINUS) {
-                    return new OpASTNode(new NumberASTNode(0), TokenType.MINUS, factorNode);
+                    return new OpASTNode(new NumberASTNode(BigDecimal.ZERO), TokenType.MINUS, factorNode, mathContext);
                 }
                 return factorNode;
 
