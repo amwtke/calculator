@@ -42,6 +42,7 @@ class CalculatorTest {
         assertEquals("27", calculator.calculate("3^3"));
         assertEquals("3", calculator.calculate("(3^3+3)/10"));
         assertEquals("56", calculator.calculate("2+3^3*2"));
+        assertEquals("16", calculator.calculate("2*2^3"));
     }
 
     @Test
