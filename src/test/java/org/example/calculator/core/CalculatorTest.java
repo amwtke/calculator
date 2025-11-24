@@ -15,6 +15,7 @@ class CalculatorTest {
         assertEquals("3", calculator.calculate("1+2"));
         assertEquals("6", calculator.calculate("2*3"));
         assertEquals("2", calculator.calculate("4/2"));
+        assertEquals("6", calculator.calculate("1+4/2+3"));
     }
 
     @Test
@@ -42,7 +43,9 @@ class CalculatorTest {
 
     @Test
     void testExponentOperator() {
-        assertEquals("48", calculator.calculate("1+(2+3)^2*2-2"));
+        assertEquals("56", calculator.calculate("1+3^3*2+1"));
+        assertEquals("29", calculator.calculate("1+3^3+1"));
+        assertEquals("49", calculator.calculate("1+(2+3)^2*2-2"));
         assertEquals("56", calculator.calculate("2+3^3*2"));
         assertEquals("8", calculator.calculate("2^3"));
         assertEquals("27", calculator.calculate("3^3"));

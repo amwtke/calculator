@@ -70,15 +70,15 @@ public class ASTParser {
     }
 
     private ASTNode getRecursiveRightNode(TokenType currentOpType) {
-        ASTNode rightNode = getRightNode(null);
+        ASTNode rightNode = getRightNode();
         while (currentToken.getType().getPriority() > currentOpType.getPriority()) {
             //说明还要向后
-            rightNode = new OpASTNode(rightNode, currentToken.getType(), getRightNode(rightNode.getTokenType()));
+            rightNode = new OpASTNode(rightNode, currentToken.getType(), getRightNode());
         }
         return rightNode;
     }
 
-    private ASTNode getRightNode(TokenType preTokenType) {
+    private ASTNode getRightNode() {
         //符号
         TokenType currentOpType = currentToken.getType();
         checkAndAdvance(currentOpType);
@@ -86,18 +86,10 @@ public class ASTParser {
         ASTNode numberNode = parseFactorAndAdvance();
         //当前符号的下一个符号，包括end。
         TokenType nextOpTokenType = currentToken.getType();
-        if (nextOpTokenType.getPriority() <= currentOpType.getPriority()) {
-            if (preTokenType == null || nextOpTokenType.equals(END)) {
-                return numberNode;
-            }
-            if (preTokenType.getPriority() <= nextOpTokenType.getPriority()) {
-                return numberNode;
-            }
-//            else {
-//                return new OpASTNode(preNode, currentOpType, getRightNode(currentOpType, numberNode));
-//            }
+        if (nextOpTokenType.equals(END) || nextOpTokenType.getPriority() <= currentOpType.getPriority()) {
+            return numberNode;
         }
-        return new OpASTNode(numberNode, nextOpTokenType, getRightNode(currentOpType));
+        return new OpASTNode(numberNode, nextOpTokenType, getRightNode());
     }
 
     private ASTNode parseFactorAndAdvance() {
