@@ -2,6 +2,8 @@ package org.example.calculator.core.parser.nodes;
 
 import org.example.calculator.core.parser.token.TokenType;
 
+import java.math.BigDecimal;
+
 /**
  * 语法树节点接口
  */
@@ -11,7 +13,7 @@ public interface ASTNode {
      *
      * @return 返回节点的计算值
      */
-    double evaluate();
+    BigDecimal evaluate();
 
     TokenType getTokenType();
 }

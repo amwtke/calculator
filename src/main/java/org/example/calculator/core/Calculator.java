@@ -5,6 +5,7 @@ import org.example.calculator.core.parser.TokenParser;
 import org.example.calculator.core.parser.nodes.ASTNode;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Calculator extends AbstractCalculator {
             TokenParser tokenParser = new TokenParser(this.expression);
             ASTParser astParser = new ASTParser(tokenParser);
             ASTNode ast = astParser.parse();
-            double result = ast.evaluate();
+            BigDecimal result = ast.evaluate();
             postProcess();
             // 格式化输出
             return formatResult(result);
@@ -35,26 +36,18 @@ public class Calculator extends AbstractCalculator {
         }
     }
 
-    private String formatResult(double result) {
-        if (Double.isInfinite(result)) {
-            throw new CalculatorException("计算结果超出范围");
+    private String formatResult(BigDecimal result) {
+        if (result == null) {
+            throw new CalculatorException("计算结果为空");
         }
-        if (Double.isNaN(result)) {
-            throw new CalculatorException("计算结果非数字");
+        BigDecimal normalized = result.stripTrailingZeros();
+        if (normalized.compareTo(BigDecimal.ZERO) == 0) {
+            return "0";
         }
-
-        if (result == (long) result) {
-            return String.valueOf((long) result);
+        if (normalized.scale() < 0) {
+            normalized = normalized.setScale(0, RoundingMode.UNNECESSARY);
         }
-
-        String stringValue = String.valueOf(result);
-        if (stringValue.contains("E") || stringValue.contains("e")) {
-            // 使用BigDecimal避免科学计数法
-            BigDecimal bd = new BigDecimal(stringValue);
-            return bd.stripTrailingZeros().toPlainString();
-        }
-
-        return stringValue;
+        return normalized.toPlainString();
     }
 
     public static List<String> batchCalculate(List<String> expressions) {

@@ -2,6 +2,7 @@ package org.example.calculator.core.parser;
 
 import org.example.calculator.core.parser.nodes.ASTNode;
 import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ASTParserTest {
@@ -12,7 +13,7 @@ class ASTParserTest {
         ASTParser parser = new ASTParser(tokenParser);
         ASTNode ast = parser.parse();
         assertNotNull(ast);
-        assertEquals(3.0, ast.evaluate(), 0.001);
+        assertEquals(0, ast.evaluate().compareTo(new BigDecimal("3")));
     }
 
     @Test
@@ -20,7 +21,7 @@ class ASTParserTest {
         TokenParser tokenParser = new TokenParser("2+3*4");
         ASTParser parser = new ASTParser(tokenParser);
         ASTNode ast = parser.parse();
-        assertEquals(14.0, ast.evaluate(), 0.001);
+        assertEquals(0, ast.evaluate().compareTo(new BigDecimal("14")));
     }
 
     @Test
@@ -28,6 +29,6 @@ class ASTParserTest {
         TokenParser tokenParser = new TokenParser("(2+3)*4");
         ASTParser parser = new ASTParser(tokenParser);
         ASTNode ast = parser.parse();
-        assertEquals(20.0, ast.evaluate(), 0.001);
+        assertEquals(0, ast.evaluate().compareTo(new BigDecimal("20")));
     }
 }

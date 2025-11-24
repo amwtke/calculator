@@ -7,6 +7,8 @@ import org.example.calculator.core.parser.nodes.OpASTNode;
 import org.example.calculator.core.parser.token.Token;
 import org.example.calculator.core.parser.token.TokenType;
 
+import java.math.BigDecimal;
+
 import static org.example.calculator.core.parser.token.TokenType.END;
 import static org.example.calculator.core.parser.token.TokenType.EQUALS;
 
@@ -70,7 +72,7 @@ public class ASTParser {
         switch (token.getType()) {
             case NUMBER:
                 checkAndAdvance(TokenType.NUMBER);
-                return new NumberASTNode(Double.parseDouble(token.getValue()));
+                return new NumberASTNode(new BigDecimal(token.getValue()));
             case LPAREN:
                 checkAndAdvance(TokenType.LPAREN);
                 ASTNode node = parseExpression(null);
@@ -82,7 +84,7 @@ public class ASTParser {
                 checkAndAdvance(token.getType());
                 ASTNode factorNode = parseFactorAndAdvance();
                 if (token.getType() == TokenType.MINUS) {
-                    return new OpASTNode(new NumberASTNode(0), TokenType.MINUS, factorNode);
+                    return new OpASTNode(new NumberASTNode(BigDecimal.ZERO), TokenType.MINUS, factorNode);
                 }
                 return factorNode;
 

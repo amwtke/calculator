@@ -2,6 +2,8 @@ package org.example.calculator.core.parser.nodes;
 
 import org.example.calculator.core.parser.token.TokenType;
 
+import java.math.BigDecimal;
+
 import static org.example.calculator.core.parser.token.TokenType.NUMBER;
 
 /**
@@ -9,14 +11,14 @@ import static org.example.calculator.core.parser.token.TokenType.NUMBER;
  */
 public class NumberASTNode implements ASTNode {
 
-    private final double value;
+    private final BigDecimal value;
 
-    public NumberASTNode(double value) {
+    public NumberASTNode(BigDecimal value) {
         this.value = value;
     }
 
     @Override
-    public double evaluate() {
+    public BigDecimal evaluate() {
         return value;
     }
 
