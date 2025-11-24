@@ -31,6 +31,7 @@ public class OpASTNode implements ASTNode {
 
         switch (operator) {
             case PLUS:
+            case TEST:
                 return leftVal.add(rightVal);
             case MINUS:
                 return leftVal.subtract(rightVal);

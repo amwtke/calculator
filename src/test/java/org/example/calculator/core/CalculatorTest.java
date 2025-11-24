@@ -56,6 +56,14 @@ class CalculatorTest {
     }
 
     @Test
+    void testTESTOperator() {
+        assertEquals("50", calculate("2@3^2*2"));
+        assertEquals("98", calculate("1+2^2@3*3+1"));
+        assertEquals("8", calculate("2@3@2@+1"));
+        assertEquals("17", calculate("1+2^3@1"));
+    }
+
+    @Test
     void testDecimalNumbers() {
         assertEquals("6.28", calculate("3.14*2"));
     }

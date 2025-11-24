@@ -11,7 +11,8 @@ public enum TokenType {
     EQUALS("=", -1),
     END("", -1),
     INVALID("#", -1),
-    EXP("^", 3);
+    EXP("^", 3),
+    TEST("@", 4);
 
     private final String symbol;
     private final int priority;
