@@ -22,43 +22,13 @@ public class ASTParser {
     }
 
     public ASTNode parse() {
-//        ASTNode expression = parseExpression();
-        ASTNode expression = parseExpression2(null);
+        ASTNode expression = parseExpression(null);
         if (currentToken != null && currentToken.getType() != END && currentToken.getType() != TokenType.EQUALS) {
             throw new CalculatorException("语法错误：错误位置 " + currentToken.getPosition(), currentToken.getPosition());
         }
         return expression;
     }
-
-    /**
-     * 从当前位置解析表达式得到最终语法树
-     * 最终语法树由多个运算单元term 使用 +/- 组合在一起得到
-     *
-     * @return 最终的语法树
-     */
-    private ASTNode parseExpression() {
-        // 解析得到第一个运算单元 term
-        ASTNode leftNode = parseTerm();
-
-        // 循环扫描所有的运算单元，例如  1+2+3+4
-        while (currentToken.getType() == TokenType.PLUS ||
-                currentToken.getType() == TokenType.MINUS) {
-
-            // 跳过 +- 运算符
-            TokenType opType = currentToken.getType();
-            checkAndAdvance(opType);
-
-            // 解析得到后续的运算单元
-            ASTNode rightNode = parseTerm();
-
-            // 得到最终的语法树
-            leftNode = new OpASTNode(leftNode, opType, rightNode);
-        }
-
-        return leftNode;
-    }
-
-    private ASTNode parseExpression2(ASTNode leftNode) {
+    private ASTNode parseExpression(ASTNode leftNode) {
         ASTNode innerLeftNode = leftNode == null ? parseFactorAndAdvance() : leftNode;
         TokenType currentOpType = currentToken.getType();
         ASTNode rightNode = getRecursiveRightNode(currentOpType);
@@ -66,7 +36,7 @@ public class ASTParser {
         if (currentToken.getType() == END || currentToken.getType() == TokenType.RPAREN) {
             return opASTNode;
         }
-        return parseExpression2(opASTNode);
+        return parseExpression(opASTNode);
     }
 
     private ASTNode getRecursiveRightNode(TokenType currentOpType) {
@@ -101,7 +71,7 @@ public class ASTParser {
                 return new NumberASTNode(Double.parseDouble(token.getValue()));
             case LPAREN:
                 checkAndAdvance(TokenType.LPAREN);
-                ASTNode node = parseExpression2(null);
+                ASTNode node = parseExpression(null);
                 checkAndAdvance(TokenType.RPAREN);
                 return node;
             case PLUS:
@@ -109,66 +79,6 @@ public class ASTParser {
                 //走了两步，从一个符号跳到了下一个符号。
                 checkAndAdvance(token.getType());
                 ASTNode factorNode = parseFactorAndAdvance();
-                if (token.getType() == TokenType.MINUS) {
-                    return new OpASTNode(new NumberASTNode(0), TokenType.MINUS, factorNode);
-                }
-                return factorNode;
-
-            default:
-                throw new CalculatorException("语法错误: 期望数字或括号", token.getPosition());
-        }
-    }
-
-    /**
-     * 从当前位置解析表达式得到一个运算单元term
-     * 多个运算单元term 使用 +/- 组合在一起得到最终语法树
-     *
-     * @return 运算单元
-     */
-    private ASTNode parseTerm() {
-        // 解析得到第一个运算因子 factor
-        ASTNode leftNode = parseFactor();
-
-        // 循环扫描所有的运算因子，例如 1*2*3
-        while (currentToken.getType() == TokenType.MULTIPLY ||
-                currentToken.getType() == TokenType.DIVIDE) {
-
-            // 跳过 */ 运算符
-            TokenType opType = currentToken.getType();
-            checkAndAdvance(opType);
-
-            // 解析得到后续的运算因子
-            ASTNode rightNode = parseFactor();
-
-            // 得到最终的运算单元
-            leftNode = new OpASTNode(leftNode, opType, rightNode);
-        }
-
-        return leftNode;
-    }
-
-    /**
-     * 从当前位置解析表达式得到一个最小粒度的运算因子，包含数字、括号表达式
-     *
-     * @return 最小粒度的运算因子
-     */
-    private ASTNode parseFactor() {
-        Token token = currentToken;
-
-        switch (token.getType()) {
-            case NUMBER:
-                checkAndAdvance(TokenType.NUMBER);
-                return new NumberASTNode(Double.parseDouble(token.getValue()));
-            case LPAREN:
-                checkAndAdvance(TokenType.LPAREN);
-                ASTNode node = parseExpression();
-                checkAndAdvance(TokenType.RPAREN);
-                return node;
-            case PLUS:
-            case MINUS:
-                //走了两步，从一个符号跳到了下一个符号。
-                checkAndAdvance(token.getType());
-                ASTNode factorNode = parseFactor();
                 if (token.getType() == TokenType.MINUS) {
                     return new OpASTNode(new NumberASTNode(0), TokenType.MINUS, factorNode);
                 }
