@@ -1,17 +1,22 @@
 package org.example.calculator.core;
 
-import org.example.calculator.core.parser.nodes.ASTNode;
 import org.example.calculator.core.parser.ASTParser;
 import org.example.calculator.core.parser.TokenParser;
+import org.example.calculator.core.parser.nodes.ASTNode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Calculator {
-    public String calculate(String expression) {
+public class Calculator extends AbstractCalculator {
+    public Calculator(String expression) {
+        super(expression);
+    }
+
+    public String calculate() {
         try {
-            if (expression == null || expression.trim().isEmpty()) {
+            preProcess();
+            if (this.expression == null || this.expression.trim().isEmpty()) {
                 throw new CalculatorException("空表达式");
             }
 
@@ -19,6 +24,7 @@ public class Calculator {
             ASTParser astParser = new ASTParser(tokenParser);
             ASTNode ast = astParser.parse();
             double result = ast.evaluate();
+            postProcess();
             // 格式化输出
             return formatResult(result);
 
@@ -47,17 +53,18 @@ public class Calculator {
             BigDecimal bd = new BigDecimal(stringValue);
             return bd.stripTrailingZeros().toPlainString();
         }
-        
+
         return stringValue;
     }
 
-    public List<String> batchCalculate(List<String> expressions) {
+    public static List<String> batchCalculate(List<String> expressions) {
         if (expressions == null || expressions.isEmpty()) {
             return new ArrayList();
         }
         List<String> result = new ArrayList();
         for (String expression : expressions) {
-            String data = calculate(expression);
+            Calculator calculator = new Calculator(expression);
+            String data = calculator.calculate();
             result.add(data);
         }
         return result;
