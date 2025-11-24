@@ -2,7 +2,8 @@ package org.example.calculator.core;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CalculatorTest {
     private final Calculator calculator = new Calculator();
@@ -32,6 +33,7 @@ class CalculatorTest {
     void testDoublePrecisionHandling() {
         assertEquals("0.75", calculator.calculate("0.5+0.25"));
     }
+
     @Test
     void testDoublePrecisionHandling2() {
         assertEquals("0.3", calculator.calculate("0.1+0.2"));
@@ -40,10 +42,11 @@ class CalculatorTest {
 
     @Test
     void testExponentOperator() {
+        assertEquals("48", calculator.calculate("1+(2+3)^2*2-2"));
+        assertEquals("56", calculator.calculate("2+3^3*2"));
         assertEquals("8", calculator.calculate("2^3"));
         assertEquals("27", calculator.calculate("3^3"));
         assertEquals("3", calculator.calculate("(3^3+3)/10"));
-        assertEquals("56", calculator.calculate("2+3^3*2"));
         assertEquals("16", calculator.calculate("2*2^3"));
     }
 

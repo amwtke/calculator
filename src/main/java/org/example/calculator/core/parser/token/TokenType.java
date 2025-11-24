@@ -10,7 +10,8 @@ public enum TokenType {
     RPAREN(")", -1),
     EQUALS("=", -1),
     END("", -1),
-    INVALID("#", -1);
+    INVALID("#", -1),
+    EXP("^", 3);
 
     private final String symbol;
     private final int priority;

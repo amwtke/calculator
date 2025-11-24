@@ -35,6 +35,8 @@ public class OpASTNode implements ASTNode {
                     throw new CalculatorException("不能除0");
                 }
                 return leftVal / rightVal;
+            case EXP:
+                return Math.pow(leftVal, rightVal);
             default:
                 throw new CalculatorException("不支持的运算符: " + operator);
         }
