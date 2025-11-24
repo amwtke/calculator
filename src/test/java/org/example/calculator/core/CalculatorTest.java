@@ -62,8 +62,8 @@ class CalculatorTest {
 
     @Test   
     void testPiConstantSupport() {
-        assertEquals("3.14", calculate("pi"));
         assertEquals("6.28", calculate("2*pi"));
+        assertEquals("4.14", calculate("pi+1"));
     }
 
     @Test

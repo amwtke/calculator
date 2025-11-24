@@ -20,7 +20,7 @@ public class Calculator extends AbstractCalculator {
                 throw new CalculatorException("空表达式");
             }
 
-            TokenParser tokenParser = new TokenParser(expression);
+            TokenParser tokenParser = new TokenParser(this.expression);
             ASTParser astParser = new ASTParser(tokenParser);
             ASTNode ast = astParser.parse();
             double result = ast.evaluate();

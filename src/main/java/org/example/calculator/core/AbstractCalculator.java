@@ -2,6 +2,9 @@ package org.example.calculator.core;
 
 import org.example.calculator.core.parser.processor.PostProcessor;
 import org.example.calculator.core.parser.processor.PreProcessor;
+import org.example.calculator.core.parser.processor.pre.ConstantPreProcessor;
+import org.example.calculator.core.parser.processor.pre.FactorTokenPreProcessor;
+import org.example.calculator.core.parser.processor.pre.IfNoEqualPreprocessor;
 
 import java.util.LinkedList;
 
@@ -22,7 +25,9 @@ public abstract class AbstractCalculator {
     }
 
     private void initPreProcessors() {
-
+        this.preProcessors.add(new ConstantPreProcessor());
+        this.preProcessors.add(new FactorTokenPreProcessor());
+        this.preProcessors.add(new IfNoEqualPreprocessor());
     }
 
     void preProcess() {

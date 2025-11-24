@@ -8,6 +8,7 @@ import org.example.calculator.core.parser.token.Token;
 import org.example.calculator.core.parser.token.TokenType;
 
 import static org.example.calculator.core.parser.token.TokenType.END;
+import static org.example.calculator.core.parser.token.TokenType.EQUALS;
 
 /**
  * 按照四则运算的语法规则解析得到语法树
@@ -28,12 +29,13 @@ public class ASTParser {
         }
         return expression;
     }
+
     private ASTNode parseExpression(ASTNode leftNode) {
         ASTNode innerLeftNode = leftNode == null ? parseFactorAndAdvance() : leftNode;
         TokenType currentOpType = currentToken.getType();
         ASTNode rightNode = getRecursiveRightNode(currentOpType);
         OpASTNode opASTNode = new OpASTNode(innerLeftNode, currentOpType, rightNode);
-        if (currentToken.getType() == END || currentToken.getType() == TokenType.RPAREN) {
+        if (currentToken.getType() == END || currentToken.getType().equals(EQUALS) || currentToken.getType() == TokenType.RPAREN) {
             return opASTNode;
         }
         return parseExpression(opASTNode);
@@ -56,7 +58,7 @@ public class ASTParser {
         ASTNode numberNode = parseFactorAndAdvance();
         //当前符号的下一个符号，包括end。
         TokenType nextOpTokenType = currentToken.getType();
-        if (nextOpTokenType.equals(END) || nextOpTokenType.getPriority() <= currentOpType.getPriority()) {
+        if (nextOpTokenType.equals(END) || nextOpTokenType.equals(EQUALS) || nextOpTokenType.getPriority() <= currentOpType.getPriority()) {
             return numberNode;
         }
         return new OpASTNode(numberNode, nextOpTokenType, getRightNode());
