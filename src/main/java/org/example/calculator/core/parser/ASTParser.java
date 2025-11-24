@@ -1,6 +1,6 @@
 package org.example.calculator.core.parser;
 
-import org.example.calculator.core.*;
+import org.example.calculator.core.CalculatorException;
 import org.example.calculator.core.parser.nodes.ASTNode;
 import org.example.calculator.core.parser.nodes.NumberASTNode;
 import org.example.calculator.core.parser.nodes.OpASTNode;
@@ -20,7 +20,8 @@ public class ASTParser {
     }
 
     public ASTNode parse() {
-        ASTNode expression = parseExpression();
+//        ASTNode expression = parseExpression();
+        ASTNode expression = parseExpression2(null);
         if (currentToken != null && currentToken.getType() != TokenType.END && currentToken.getType() != TokenType.EQUALS) {
             throw new CalculatorException("语法错误：错误位置 " + currentToken.getPosition(), currentToken.getPosition());
         }
@@ -35,7 +36,7 @@ public class ASTParser {
      */
     private ASTNode parseExpression() {
         // 解析得到第一个运算单元 term
-            ASTNode leftNode = parseTerm();
+        ASTNode leftNode = parseTerm();
 
         // 循环扫描所有的运算单元，例如  1+2+3+4
         while (currentToken.getType() == TokenType.PLUS ||
@@ -53,6 +54,58 @@ public class ASTParser {
         }
 
         return leftNode;
+    }
+
+    private ASTNode parseExpression2(ASTNode leftNode) {
+        ASTNode innerLeftNode = leftNode == null ? parseFactorAndAdvance() : leftNode;
+        TokenType currentOpType = currentToken.getType();
+        ASTNode rightNode = getRightNode();
+        OpASTNode opASTNode = new OpASTNode(innerLeftNode, currentOpType, rightNode);
+        if (currentToken.getType() == TokenType.END || currentToken.getType() == TokenType.RPAREN) {
+            return opASTNode;
+        }
+        return parseExpression2(opASTNode);
+    }
+
+    private ASTNode getRightNode() {
+        //符号
+        TokenType currentOpType = currentToken.getType();
+        checkAndAdvance(currentOpType);
+        //数字
+        ASTNode numberNode = parseFactorAndAdvance();
+        //当前符号的下一个符号
+        TokenType nextOpTokenType = currentToken.getType();
+        if (nextOpTokenType.getPriority() <= currentOpType.getPriority()) {
+            return numberNode;
+        }
+        return new OpASTNode(numberNode, nextOpTokenType, getRightNode());
+    }
+
+    private ASTNode parseFactorAndAdvance() {
+        Token token = currentToken;
+
+        switch (token.getType()) {
+            case NUMBER:
+                checkAndAdvance(TokenType.NUMBER);
+                return new NumberASTNode(Double.parseDouble(token.getValue()));
+            case LPAREN:
+                checkAndAdvance(TokenType.LPAREN);
+                ASTNode node = parseExpression2(null);
+                checkAndAdvance(TokenType.RPAREN);
+                return node;
+            case PLUS:
+            case MINUS:
+                //走了两步，从一个符号跳到了下一个符号。
+                checkAndAdvance(token.getType());
+                ASTNode factorNode = parseFactorAndAdvance();
+                if (token.getType() == TokenType.MINUS) {
+                    return new OpASTNode(new NumberASTNode(0), TokenType.MINUS, factorNode);
+                }
+                return factorNode;
+
+            default:
+                throw new CalculatorException("语法错误: 期望数字或括号", token.getPosition());
+        }
     }
 
     /**
@@ -102,6 +155,7 @@ public class ASTParser {
                 return node;
             case PLUS:
             case MINUS:
+                //走了两步，从一个符号跳到了下一个符号。
                 checkAndAdvance(token.getType());
                 ASTNode factorNode = parseFactor();
                 if (token.getType() == TokenType.MINUS) {

@@ -39,4 +39,9 @@ public class OpASTNode implements ASTNode {
                 throw new CalculatorException("不支持的运算符: " + operator);
         }
     }
+
+    @Override
+    public TokenType getTokenType() {
+        return this.operator;
+    }
 }

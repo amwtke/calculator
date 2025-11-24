@@ -9,6 +9,8 @@ class CalculatorTest {
 
     @Test
     void testBasicOperations() {
+        assertEquals("24", calculator.calculate("1*2*3*4"));
+        assertEquals("10", calculator.calculate("1+2+3+4"));
         assertEquals("3", calculator.calculate("1+2"));
         assertEquals("6", calculator.calculate("2*3"));
         assertEquals("2", calculator.calculate("4/2"));

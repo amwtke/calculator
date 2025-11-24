@@ -1,22 +1,24 @@
 package org.example.calculator.core.parser.token;
 
 public enum TokenType {
-    PLUS("+"),
-    MINUS("-"),
-    MULTIPLY("*"),
-    DIVIDE("/"),
-    NUMBER("number"),
-    LPAREN("("),
-    RPAREN(")"),
-    EQUALS("="),
-    END(""),
-    INVALID("#");
+    PLUS("+", 1),
+    MINUS("-", 1),
+    MULTIPLY("*", 2),
+    DIVIDE("/", 2),
+    NUMBER("number", -1),
+    LPAREN("(", -1),
+    RPAREN(")", -1),
+    EQUALS("=", -1),
+    END("", -1),
+    INVALID("#", -1);
 
     private final String symbol;
+    private final int priority;
 
 
-    TokenType(String symbol) {
+    TokenType(String symbol, int priority) {
         this.symbol = symbol;
+        this.priority = priority;
     }
 
     /**
@@ -32,6 +34,15 @@ public enum TokenType {
             }
         }
         return INVALID;
+    }
+
+    /**
+     * 获取该枚举对应的优先级
+     *
+     * @return 优先级，-1 表示不参与排序
+     */
+    public int getPriority() {
+        return priority;
     }
 
     @Override
